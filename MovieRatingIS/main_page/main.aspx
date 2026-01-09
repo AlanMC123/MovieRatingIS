@@ -69,12 +69,39 @@
             <h1>电影评分系统</h1>
             
             <div class="search-container">
-                <asp:TextBox ID="txtSearch" runat="server" placeholder="输入搜索关键词"></asp:TextBox>
+                <asp:TextBox ID="txtSearch" runat="server"></asp:TextBox>
                 <asp:Button ID="btnSearch" runat="server" Text="搜索" OnClick="btnSearch_Click" />
             </div>
             
             <div class="grid-container">
-                ds</div>
+                <asp:GridView ID="gvMovies" runat="server" 
+                    AutoGenerateColumns="False" 
+                    CssClass="grid-view"
+                    AllowPaging="True" 
+                    PageSize="10"
+                    OnPageIndexChanging="gvMovies_PageIndexChanging">
+                    
+                    <Columns>
+                        <asp:BoundField DataField="MovieID" HeaderText="ID" />
+                        <asp:BoundField DataField="Title" HeaderText="电影名称" />
+                        <asp:BoundField DataField="Genre" HeaderText="类型" />
+                        <asp:BoundField DataField="ReleaseYear" HeaderText="上映年份" />
+                        <asp:BoundField DataField="LastingTime" HeaderText="时长" />
+                        <asp:BoundField DataField="Distributor" HeaderText="发行商" />
+                        <asp:BoundField DataField="Rating" HeaderText="评分" />
+                    </Columns>
+
+                    <PagerStyle Visible="false" />
+                </asp:GridView>
+
+                <div class="pager">
+                    <asp:LinkButton ID="lnkFirst" runat="server" OnClick="lnkFirst_Click">首页</asp:LinkButton>
+                    <asp:LinkButton ID="lnkPrev" runat="server" OnClick="lnkPrev_Click">上一页</asp:LinkButton>
+                    <span>第 <asp:Label ID="lblCurrentPage" runat="server"></asp:Label> 页 / 共 <asp:Label ID="lblTotalPages" runat="server"></asp:Label> 页</span>
+                    <asp:LinkButton ID="lnkNext" runat="server" OnClick="lnkNext_Click">下一页</asp:LinkButton>
+                    <asp:LinkButton ID="lnkLast" runat="server" OnClick="lnkLast_Click">末页</asp:LinkButton>
+                </div>
+</div>
         </div>
     </form>
 </body>

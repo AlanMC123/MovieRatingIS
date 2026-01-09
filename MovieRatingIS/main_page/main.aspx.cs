@@ -40,8 +40,24 @@ public partial class main : System.Web.UI.Page
 
                 gvMovies.DataSource = dataTable;
                 gvMovies.DataBind();
+
+                // 更新页面信息
+                UpdatePaginationInfo();
             }
         }
+    }
+
+    private void UpdatePaginationInfo()
+    {
+        // 更新当前页码和总页数
+        lblCurrentPage.Text = (gvMovies.PageIndex + 1).ToString();
+        lblTotalPages.Text = gvMovies.PageCount.ToString();
+
+        // 启用/禁用分页按钮
+        lnkFirst.Enabled = (gvMovies.PageIndex > 0);
+        lnkPrev.Enabled = (gvMovies.PageIndex > 0);
+        lnkNext.Enabled = (gvMovies.PageIndex < gvMovies.PageCount - 1);
+        lnkLast.Enabled = (gvMovies.PageIndex < gvMovies.PageCount - 1);
     }
 
     protected void btnSearch_Click(object sender, EventArgs e)
@@ -57,5 +73,38 @@ public partial class main : System.Web.UI.Page
         gvMovies.PageIndex = e.NewPageIndex;
         BindGridView();
     }
-}
+
+    protected void lnkFirst_Click(object sender, EventArgs e)
+    {
+        // 跳转到第一页
+        gvMovies.PageIndex = 0;
+        BindGridView();
+    }
+
+    protected void lnkPrev_Click(object sender, EventArgs e)
+    {
+        // 跳转到上一页
+        if (gvMovies.PageIndex > 0)
+        {
+            gvMovies.PageIndex--;
+            BindGridView();
+        }
+    }
+
+    protected void lnkNext_Click(object sender, EventArgs e)
+    {
+        // 跳转到下一页
+        if (gvMovies.PageIndex < gvMovies.PageCount - 1)
+        {
+            gvMovies.PageIndex++;
+            BindGridView();
+        }
+    }
+
+    protected void lnkLast_Click(object sender, EventArgs e)
+    {
+        // 跳转到最后一页
+        gvMovies.PageIndex = gvMovies.PageCount - 1;
+        BindGridView();
+    }
 }
