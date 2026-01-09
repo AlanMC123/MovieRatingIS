@@ -1,0 +1,148 @@
+* { /* 全局基础设置 */
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    margin: 0;
+    height: 100vh; 
+
+    /* Flexbox居中布局 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1, h2 {
+    color: #333;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+p {
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.content-box {
+    width: 500px;
+    padding: 40px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1); 
+}
+
+.db-box {
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 15px 0;
+    display: block;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    font-size: 16px;
+
+    /* 平滑过渡动画 */
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #9face6;
+    box-shadow: 0 0 8px rgba(159, 172, 230, 0.3); 
+}
+
+.gender-group {
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+.radio-group {
+    display: flex;
+    gap: 25px;
+}
+
+.gender-label {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.gender-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+}
+
+.gender-group input[type="radio"] {
+    width: auto;
+    margin: 0;
+    accent-color: #9face6;
+}
+
+.gender-group label:hover {
+    color: #4f66ca;
+}
+
+.submit-btn {
+    width: 75%;
+    padding: 12px;
+    margin-top: 20px;
+    display: block;
+    margin: 20px auto;
+    background-color: #4f66ca;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #4447a2;
+    transform: translateY(-2px);
+}
+
+.back-btn {
+    width: 75%;
+    padding: 12px;
+    margin-top: 20px;
+    display: block;
+    margin: 20px auto;
+    background-color: #e9ecfd;
+    color: rgb(105, 105, 105);
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.back-btn:hover {
+    background-color: #c4c4c4;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
