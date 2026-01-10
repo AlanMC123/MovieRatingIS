@@ -12,6 +12,17 @@ public partial class main : System.Web.UI.Page
         {
             BindGridView();
         }
+        
+        // 显示当前用户名
+        if (Session["Username"] != null)
+        {
+            lblUsername.Text = Session["Username"].ToString();
+        }
+        else
+        {
+            // 如果没有用户名信息，重定向到登录页面
+            Response.Redirect("~/start_page/login.html");
+        }
     }
 
     private void BindGridView()
@@ -106,5 +117,22 @@ public partial class main : System.Web.UI.Page
         // 跳转到最后一页
         gvMovies.PageIndex = gvMovies.PageCount - 1;
         BindGridView();
+    }
+
+    protected void lnkChangePassword_Click(object sender, EventArgs e)
+    {
+        // 处理修改密码功能
+        Response.Redirect("~/changepwd_page/change_password.aspx");
+    }
+
+    protected void lnkLogout_Click(object sender, EventArgs e)
+    {
+        // 处理退出登录功能
+        // 清除会话
+        Session.Clear();
+        Session.Abandon();
+        
+        // 重定向到登录页面
+        Response.Redirect("~/start_page/login.html");
     }
 }

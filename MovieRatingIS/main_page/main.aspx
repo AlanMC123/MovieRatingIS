@@ -11,6 +11,31 @@
             margin: 0 auto;
             padding: 20px;
         }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            margin-right: auto;
+            font-weight: bold;
+        }
+        .user-menu {
+            display: flex;
+            gap: 15px;
+        }
+        .user-menu a {
+            padding: 5px 10px;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f2f2f2;
+        }
+        .user-menu a:hover {
+            background-color: #e9e9e9;
+        }
         .search-container {
             text-align: right;
             margin-bottom: 20px;
@@ -66,7 +91,16 @@
 <body>
     <form id="form1" runat="server">
         <div class="container">
-            <h1>电影评分系统</h1>
+            <div class="header-container">
+                <h1>电影评分系统</h1>
+                <div class="user-info">
+                    欢迎，<asp:Label ID="lblUsername" runat="server"></asp:Label>
+                </div>
+                <div class="user-menu">
+                    <asp:LinkButton ID="lnkChangePassword" runat="server" OnClick="lnkChangePassword_Click">修改密码</asp:LinkButton>
+                    <asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click">退出登录</asp:LinkButton>
+                </div>
+            </div>
             
             <div class="search-container">
                 <asp:TextBox ID="txtSearch" runat="server"></asp:TextBox>
