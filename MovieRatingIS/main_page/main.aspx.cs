@@ -29,11 +29,11 @@ public partial class main : System.Web.UI.Page
     {
         string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
         string searchTerm = txtSearch.Text.Trim();
-        string query = "SELECT MovieID, Title, Director, ReleaseYear, Genre, Rating FROM Movies";
+        string query = "SELECT Mno,Mname,Mtype,Myear,Mtime,Distributer FROM Movie";//进行了修改，目前Movie表结构如下
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query += " WHERE Title LIKE @SearchTerm OR Director LIKE @SearchTerm OR Genre LIKE @SearchTerm";
+            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm OR Myear LIKE @SearchTerm";//根据表结构，现在仅支持基于电影名、电影类型和上映时间的查询
         }
 
         using (SqlConnection connection = new SqlConnection(connectionString))
