@@ -17,8 +17,9 @@ public partial class codes_connection : System.Web.UI.Page
                 string dbPwd = userTable.Rows[0]["Password"].ToString(); 
                 if (dbPwd == password) 
                 {
-                    // 登录成功：存用户名到Session，跳转到main.aspx
+                    // 登录成功：存用户名和UserID到Session，跳转到main.aspx
                     Session["Username"] = username;
+                    Session["UserID"] = userTable.Rows[0]["UserID"].ToString();
                     Response.Redirect("~/main_page/main.aspx");
                 }
                 else

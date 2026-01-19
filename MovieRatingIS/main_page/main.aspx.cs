@@ -102,6 +102,29 @@ public partial class main : System.Web.UI.Page
         }
     }
 
+    protected void btnRateMovie_Click(object sender, EventArgs e)
+    {
+        // 遍历GridView，找到被选中的电影
+        foreach (GridViewRow row in gvMovies.Rows)
+        {
+            RadioButton rb = (RadioButton)row.FindControl("rbSelectMovie");
+            if (rb != null && rb.Checked)
+            {
+                // 获取选中的电影ID和名称
+                int movieId = Convert.ToInt32(gvMovies.DataKeys[row.RowIndex].Value);
+                string movieTitle = row.Cells[2].Text; // 电影名称在第2列
+
+                // 跳转到评分页面
+                string userId = Session["UserID"] != null ? Session["UserID"].ToString() : "";
+                Response.Redirect($"../rating_page/rating.html?movieId={movieId}&movieTitle={Server.UrlEncode(movieTitle)}&userId={userId}");
+                return;
+            }
+        }
+
+        // 如果没有选中电影，提示用户
+        Response.Write("<script>alert('请先选择一部电影！');</script>");
+    }
+
     protected void lnkNext_Click(object sender, EventArgs e)
     {
         // 跳转到下一页

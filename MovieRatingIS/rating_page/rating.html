@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电影评分</title>
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* 全局字体设置 */
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* 容器样式 */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 页面标题 */
+        .header {
+            text-align: center;
+            margin: 40px 0 30px;
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+        }
+        
+        /* 内容卡片 */
+        .content {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            padding: 30px;
+        }
+        
+        /* 电影信息区域 */
+        .movie-info {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .movie-info:hover {
+            transform: translateY(-5px);
+        }
+        
+        .movie-info h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .movie-info p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        /* 评分区域 */
+        .rating-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .rating-section h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        /* 星级评分样式 */
+        .star-rating {
+            font-size: 40px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .star {
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .star:hover,
+        .star.hover,
+        .star.selected {
+            color: #ffd700;
+            transform: scale(1.2);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* 评价区域 */
+        .comment-section {
+            margin-bottom: 30px;
+        }
+        
+        .comment-section h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .comment-section textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .comment-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .comment-section textarea::placeholder {
+            color: #bdc3c7;
+        }
+        
+        /* 按钮组 */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 150px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .movie-info h2 {
+                font-size: 1.5rem;
+            }
+            
+            .star-rating {
+                font-size: 30px;
+                gap: 10px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .content {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>电影评分</h1>
+        </div>
+        <div class="content">
+            <div class="movie-info">
+                <h2 id="movieTitle">电影名称</h2>
+                <p id="movieDetails">电影详情</p>
+            </div>
+            
+            <form id="ratingForm" method="post" action="rating.aspx">
+                <input type="hidden" id="movieId" name="movieId" value="">
+                <input type="hidden" id="userId" name="userId" value="">
+                
+                <div class="rating-section">
+                    <h3>评分</h3>
+                    <div class="star-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <input type="hidden" id="rating" name="rating" value="">
+                </div>
+                
+                <div class="comment-section">
+                    <h3>评价</h3>
+                    <textarea id="comment" name="comment" placeholder="请输入您的评价（可选）"></textarea>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">提交评分</button>
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">返回电影列表</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // 从URL获取参数
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        
+        // 初始化页面
+        function init() {
+            const movieId = getQueryParam('movieId');
+            const movieTitle = getQueryParam('movieTitle');
+            const userId = getQueryParam('userId') || '';
+            
+            if (movieId && movieTitle) {
+                document.getElementById('movieId').value = movieId;
+                document.getElementById('userId').value = userId;
+                document.getElementById('movieTitle').textContent = movieTitle;
+                document.getElementById('movieDetails').textContent = `电影ID: ${movieId}`;
+            }
+        }
+        
+        // 星级评分功能
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            
+            const stars = document.querySelectorAll('.star');
+            const ratingInput = document.getElementById('rating');
+            
+            // 更新星级显示
+            function updateStars(rating, isSelected = false) {
+                stars.forEach((star, index) => {
+                    star.classList.remove('selected', 'hover');
+                    if (index < rating) {
+                        star.classList.add(isSelected ? 'selected' : 'hover');
+                    }
+                });
+            }
+            
+            // 点击事件：设置评分
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    ratingInput.value = rating;
+                    updateStars(rating, true);
+                });
+            });
+            
+            // 鼠标悬停事件：预览评分
+            stars.forEach(star => {
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    updateStars(rating, false);
+                });
+            });
+            
+            // 鼠标离开事件：恢复选中状态
+            document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+                const rating = ratingInput.value ? parseInt(ratingInput.value) : 0;
+                updateStars(rating, true);
+            });
+        });
+        
+        // 返回电影列表
+        function goBack() {
+            window.location.href = '../main_page/main.aspx';
+        }
+        
+        // 表单提交验证
+        document.getElementById('ratingForm').addEventListener('submit', function(e) {
+            const rating = document.getElementById('rating').value;
+            if (!rating) {
+                e.preventDefault();
+                alert('请选择评分');
+            }
+        });
+    </script>
+</body>
+</html>
