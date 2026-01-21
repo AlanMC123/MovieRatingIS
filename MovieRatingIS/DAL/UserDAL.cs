@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -14,7 +14,7 @@ namespace MovieRatingIS.DAL
         public DataTable GetUserByUsername(string username)
         {
             string connStr = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
-            string query = "SELECT UserID, Username, Password FROM Users WHERE Username = @Username";
+            string query = "SELECT Uno, Uname, Upassword FROM Users WHERE Uname = @Username";
             DataTable userTable = new DataTable();
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -41,7 +41,7 @@ namespace MovieRatingIS.DAL
         public bool UpdatePassword(int userId, string oldPwd, string newPwd)
         {
             string connStr = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
-            string query = "UPDATE Users SET Password = @NewPwd WHERE UserID = @UserID AND Password = @OldPwd";
+            string query = "UPDATE Users SET Upassword = @NewPwd WHERE Uno = @UserID AND Upassword = @OldPwd";
             int affectedRows = 0; 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -68,7 +68,7 @@ namespace MovieRatingIS.DAL
         public bool AddUser(MovieRatingIS.Model.User user)
         {
             string connStr = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
-            string query = "INSERT INTO Users (Username, Password, Gender, Tele) VALUES (@Username, @Password, @Gender, @Tele)";
+            string query = "INSERT INTO Users (Uname, Upassword, Usex, Utelephone) VALUES (@Uname, @Upassword, @Usex, @Utelephone)";
             int affectedRows = 0;
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -77,10 +77,10 @@ namespace MovieRatingIS.DAL
                     conn.Open();
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Username", user.Username);
-                        cmd.Parameters.AddWithValue("@Password", user.Password);
-                        cmd.Parameters.AddWithValue("@Gender", user.Gender);
-                        cmd.Parameters.AddWithValue("@Tele", user.Tele);
+                        cmd.Parameters.AddWithValue("@Uname", user.Username);
+                        cmd.Parameters.AddWithValue("@Upassword", user.Password);
+                        cmd.Parameters.AddWithValue("@Usex", user.Gender);
+                        cmd.Parameters.AddWithValue("@Utelephone", user.Tele);
                         affectedRows = cmd.ExecuteNonQuery();
                     }
                 }

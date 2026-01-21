@@ -88,13 +88,16 @@ public partial class rating_page_rating : System.Web.UI.Page
             }
         }
 
-        // 更新Movie表中的平均评分
-        string updateMovieQuery = "UPDATE Movie SET Rating = @AverageRating WHERE MovieID = @MovieID";
+        // 注意：Movie表中没有Rating列，暂时注释掉更新操作
+        // 如需实现此功能，请先在Movie表中添加Rating列
+        /*
+        string updateMovieQuery = "UPDATE Movie SET Rating = @AverageRating WHERE Mno = @Mno";
         using (SqlCommand command = new SqlCommand(updateMovieQuery, connection))
         {
             command.Parameters.AddWithValue("@AverageRating", averageRating);
-            command.Parameters.AddWithValue("@MovieID", movieId);
+            command.Parameters.AddWithValue("@Mno", movieId);
             command.ExecuteNonQuery();
         }
+        */
     }
 }

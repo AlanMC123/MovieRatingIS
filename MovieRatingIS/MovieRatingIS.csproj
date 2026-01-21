@@ -50,15 +50,11 @@
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="bin\MovieRatingIS.dll" />
-    <Content Include="bin\MovieRatingIS.pdb" />
     <Content Include="changepwd_page\change_password.aspx" />
     <Content Include="codes\connection.aspx" />
     <Content Include="codes\register.aspx" />
+    <Content Include="favorite_page\favorite.aspx" />
     <Content Include="main_page\main.aspx" />
-    <Content Include="obj\Debug\MovieRatingIS.csproj.FileListAbsolute.txt" />
-    <Content Include="obj\Debug\MovieRatingIS.dll" />
-    <Content Include="obj\Debug\MovieRatingIS.pdb" />
     <Content Include="rating_page\rating.aspx" />
     <Content Include="rating_page\rating.html" />
     <Content Include="start_page\login.html" />
@@ -97,6 +93,10 @@
     </Compile>
     <Compile Include="DAL\MovieDAL.cs" />
     <Compile Include="DAL\UserDAL.cs" />
+    <Compile Include="favorite_page\favorite.aspx.cs">
+      <DependentUpon>favorite.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="main_page\main.aspx.cs">
       <DependentUpon>main.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -112,12 +112,6 @@
       <DependentUpon>test.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

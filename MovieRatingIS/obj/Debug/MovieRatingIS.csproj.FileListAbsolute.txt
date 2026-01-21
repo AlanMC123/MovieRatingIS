@@ -1,4 +1,1 @@
-F:\Codes\MovieRatingIS\MovieRatingIS\bin\MovieRatingIS.dll
-F:\Codes\MovieRatingIS\MovieRatingIS\bin\MovieRatingIS.pdb
-F:\Codes\MovieRatingIS\MovieRatingIS\obj\Debug\MovieRatingIS.dll
-F:\Codes\MovieRatingIS\MovieRatingIS\obj\Debug\MovieRatingIS.pdb
+F:\Codes\MovieRatingIS\MovieRatingIS\obj\Debug\MovieRatingIS.csprojResolveAssemblyReference.cache

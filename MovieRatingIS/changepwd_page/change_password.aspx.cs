@@ -63,7 +63,7 @@ public partial class change_password : System.Web.UI.Page
                 connection.Open();
 
                 // 检查原密码是否正确
-                string checkPasswordQuery = "SELECT UserID FROM Users WHERE UserID = @UserID AND Password = @OldPassword";
+                string checkPasswordQuery = "SELECT Uno FROM Users WHERE Uno = @UserID AND Upassword = @OldPassword";
                 using (SqlCommand checkCommand = new SqlCommand(checkPasswordQuery, connection))
                 {
                     checkCommand.Parameters.AddWithValue("@UserID", userId);
@@ -78,7 +78,7 @@ public partial class change_password : System.Web.UI.Page
                 }
 
                 // 更新密码
-                string updatePasswordQuery = "UPDATE Users SET Password = @NewPassword WHERE UserID = @UserID";
+                string updatePasswordQuery = "UPDATE Users SET Upassword = @NewPassword WHERE Uno = @UserID";
                 using (SqlCommand updateCommand = new SqlCommand(updatePasswordQuery, connection))
                 {
                     updateCommand.Parameters.AddWithValue("@NewPassword", newPassword);

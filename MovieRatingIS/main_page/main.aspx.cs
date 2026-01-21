@@ -1,10 +1,12 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Web.UI.WebControls;
 
-public partial class main : System.Web.UI.Page
+namespace MovieRatingIS
+{
+    public partial class main : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -13,14 +15,14 @@ public partial class main : System.Web.UI.Page
             BindGridView();
         }
         
-        // 显示当前用户名
+        // 鏄剧ず褰撳墠鐢ㄦ埛鍚?
         if (Session["Username"] != null)
         {
             lblUsername.Text = Session["Username"].ToString();
         }
         else
         {
-            // 如果没有用户名信息，重定向到登录页面
+            // 濡傛灉娌℃湁鐢ㄦ埛鍚嶄俊鎭紝閲嶅畾鍚戝埌鐧诲綍椤甸潰
             Response.Redirect("~/start_page/login.html");
         }
     }
@@ -29,11 +31,11 @@ public partial class main : System.Web.UI.Page
     {
         string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
         string searchTerm = txtSearch.Text.Trim();
-        string query = "SELECT Mno,Mname,Mtype,Myear,Mtime,Distributer FROM Movie";//进行了修改，目前Movie表结构如下
+        string query = "SELECT Mno,Mname,Mtype,Myear,Mtime,Distributer FROM Movie";//杩涜浜嗕慨鏀癸紝鐩墠Movie琛ㄧ粨鏋勫涓?
 
         if (!string.IsNullOrEmpty(searchTerm))
         {
-            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm OR Myear LIKE @SearchTerm";//根据表结构，现在仅支持基于电影名、电影类型和上映时间的查询
+            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm OR Myear LIKE @SearchTerm";//鏍规嵁琛ㄧ粨鏋勶紝鐜板湪浠呮敮鎸佸熀浜庣數褰卞悕銆佺數褰辩被鍨嬪拰涓婃槧鏃堕棿鐨勬煡璇?
         }
 
         using (SqlConnection connection = new SqlConnection(connectionString))
@@ -52,7 +54,7 @@ public partial class main : System.Web.UI.Page
                 gvMovies.DataSource = dataTable;
                 gvMovies.DataBind();
 
-                // 更新页面信息
+                // 鏇存柊椤甸潰淇℃伅
                 UpdatePaginationInfo();
             }
         }
@@ -60,11 +62,11 @@ public partial class main : System.Web.UI.Page
 
     private void UpdatePaginationInfo()
     {
-        // 更新当前页码和总页数
+        // 鏇存柊褰撳墠椤电爜鍜屾€婚〉鏁?
         lblCurrentPage.Text = (gvMovies.PageIndex + 1).ToString();
         lblTotalPages.Text = gvMovies.PageCount.ToString();
 
-        // 启用/禁用分页按钮
+        // 鍚敤/绂佺敤鍒嗛〉鎸夐挳
         lnkFirst.Enabled = (gvMovies.PageIndex > 0);
         lnkPrev.Enabled = (gvMovies.PageIndex > 0);
         lnkNext.Enabled = (gvMovies.PageIndex < gvMovies.PageCount - 1);
@@ -73,28 +75,28 @@ public partial class main : System.Web.UI.Page
 
     protected void btnSearch_Click(object sender, EventArgs e)
     {
-        // 重置分页索引
+        // 閲嶇疆鍒嗛〉绱㈠紩
         gvMovies.PageIndex = 0;
         BindGridView();
     }
 
     protected void gvMovies_PageIndexChanging(object sender, GridViewPageEventArgs e)
     {
-        // 设置新的分页索引
+        // 璁剧疆鏂扮殑鍒嗛〉绱㈠紩
         gvMovies.PageIndex = e.NewPageIndex;
         BindGridView();
     }
 
     protected void lnkFirst_Click(object sender, EventArgs e)
     {
-        // 跳转到第一页
+        // 璺宠浆鍒扮涓€椤?
         gvMovies.PageIndex = 0;
         BindGridView();
     }
 
     protected void lnkPrev_Click(object sender, EventArgs e)
     {
-        // 跳转到上一页
+        // 璺宠浆鍒颁笂涓€椤?
         if (gvMovies.PageIndex > 0)
         {
             gvMovies.PageIndex--;
@@ -104,63 +106,63 @@ public partial class main : System.Web.UI.Page
 
     protected void btnRateMovie_Click(object sender, EventArgs e)
     {
-        // 遍历GridView，找到被选中的电影
+        // 閬嶅巻GridView锛屾壘鍒拌閫変腑鐨勭數褰?
         foreach (GridViewRow row in gvMovies.Rows)
         {
             RadioButton rb = (RadioButton)row.FindControl("rbSelectMovie");
             if (rb != null && rb.Checked)
             {
-                // 获取选中的电影ID和名称
+                // 鑾峰彇閫変腑鐨勭數褰盜D鍜屽悕绉?
                 int movieId = Convert.ToInt32(gvMovies.DataKeys[row.RowIndex].Value);
-                string movieTitle = row.Cells[2].Text; // 电影名称在第2列
+                string movieTitle = row.Cells[2].Text; // 鐢靛奖鍚嶇О鍦ㄧ2鍒?
 
-                // 跳转到评分页面
+                // 璺宠浆鍒拌瘎鍒嗛〉闈?
                 string userId = Session["UserID"] != null ? Session["UserID"].ToString() : "";
-                Response.Redirect($"../rating_page/rating.html?movieId={movieId}&movieTitle={Server.UrlEncode(movieTitle)}&userId={userId}");
+                Response.Redirect("../rating_page/rating.html?movieId=" + movieId + "&movieTitle=" + Server.UrlEncode(movieTitle) + "&userId=" + userId);
                 return;
             }
         }
 
-        // 如果没有选中电影，提示用户
-        Response.Write("<script>alert('请先选择一部电影！');</script>");
+        // 濡傛灉娌℃湁閫変腑鐢靛奖锛屾彁绀虹敤鎴?
+        Response.Write("<script>alert('璇峰厛閫夋嫨涓€閮ㄧ數褰憋紒');</script>");
     }
 
     protected void btnFavorite_Click(object sender, EventArgs e)
     {
-        // 遍历GridView，找到被选中的电影
+        // 閬嶅巻GridView锛屾壘鍒拌閫変腑鐨勭數褰?
         foreach (GridViewRow row in gvMovies.Rows)
         {
             RadioButton rb = (RadioButton)row.FindControl("rbSelectMovie");
             if (rb != null && rb.Checked)
             {
-                // 获取选中的电影ID
+                // 鑾峰彇閫変腑鐨勭數褰盜D
                 int movieId = Convert.ToInt32(gvMovies.DataKeys[row.RowIndex].Value);
                 string movieTitle = row.Cells[2].Text;
 
-                // 获取用户ID
+                // 鑾峰彇鐢ㄦ埛ID
                 if (Session["UserID"] == null)
                 {
-                    Response.Write("<script>alert('请先登录！');window.location.href='../start_page/login.html';</script>");
+                    Response.Write("<script>alert('璇峰厛鐧诲綍锛?);window.location.href='../start_page/login.html';</script>");
                     return;
                 }
                 int userId = Convert.ToInt32(Session["UserID"]);
 
-                // 收藏电影
+                // 鏀惰棌鐢靛奖
                 bool success = AddFavorite(userId, movieId);
                 if (success)
                 {
-                    Response.Write($"<script>alert('电影\"{movieTitle}\"已成功收藏！');</script>");
+                    Response.Write("<script>alert('鐢靛奖\"" + movieTitle + "\"宸叉垚鍔熸敹钘忥紒');</script>");
                 }
                 else
                 {
-                    Response.Write("<script>alert('收藏失败，该电影可能已被收藏！');</script>");
+                    Response.Write("<script>alert('鏀惰棌澶辫触锛岃鐢靛奖鍙兘宸茶鏀惰棌锛?);</script>");
                 }
                 return;
             }
         }
 
-        // 如果没有选中电影，提示用户
-        Response.Write("<script>alert('请先选择一部电影！');</script>");
+        // 濡傛灉娌℃湁閫変腑鐢靛奖锛屾彁绀虹敤鎴?
+        Response.Write("<script>alert('璇峰厛閫夋嫨涓€閮ㄧ數褰憋紒');</script>");
     }
 
     private bool AddFavorite(int userId, int movieId)
@@ -171,7 +173,7 @@ public partial class main : System.Web.UI.Page
         {
             connection.Open();
 
-            // 检查是否已经收藏
+            // 妫€鏌ユ槸鍚﹀凡缁忔敹钘?
             string checkQuery = "SELECT COUNT(*) FROM Favorite WHERE Uno = @Uno AND Mno = @Mno";
             using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
             {
@@ -180,17 +182,17 @@ public partial class main : System.Web.UI.Page
                 int count = Convert.ToInt32(checkCommand.ExecuteScalar());
                 if (count > 0)
                 {
-                    return false; // 已收藏
+                    return false; // 宸叉敹钘?
                 }
             }
 
-            // 添加收藏
-            string insertQuery = "INSERT INTO Favorite (Uno, Mno, FavoriteTime) VALUES (@Uno, @Mno, @FavoriteTime)";
+            // 娣诲姞鏀惰棌
+            string insertQuery = "INSERT INTO Favorite (Uno, Mno, Type) VALUES (@Uno, @Mno, @Type)";
             using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
             {
                 insertCommand.Parameters.AddWithValue("@Uno", userId);
                 insertCommand.Parameters.AddWithValue("@Mno", movieId);
-                insertCommand.Parameters.AddWithValue("@FavoriteTime", DateTime.Now);
+                insertCommand.Parameters.AddWithValue("@Type", "favorite"); // 鍥哄畾鏀惰棌绫诲瀷涓篺avorite
 
                 int rowsAffected = insertCommand.ExecuteNonQuery();
                 return rowsAffected > 0;
@@ -200,13 +202,13 @@ public partial class main : System.Web.UI.Page
 
     protected void btnViewFavorites_Click(object sender, EventArgs e)
     {
-        // 跳转到收藏页面
+        // 璺宠浆鍒版敹钘忛〉闈?
         Response.Redirect("../favorite_page/favorite.aspx");
     }
 
     protected void lnkNext_Click(object sender, EventArgs e)
     {
-        // 跳转到下一页
+        // 璺宠浆鍒颁笅涓€椤?
         if (gvMovies.PageIndex < gvMovies.PageCount - 1)
         {
             gvMovies.PageIndex++;
@@ -216,25 +218,26 @@ public partial class main : System.Web.UI.Page
 
     protected void lnkLast_Click(object sender, EventArgs e)
     {
-        // 跳转到最后一页
+        // 璺宠浆鍒版渶鍚庝竴椤?
         gvMovies.PageIndex = gvMovies.PageCount - 1;
         BindGridView();
     }
 
     protected void lnkChangePassword_Click(object sender, EventArgs e)
     {
-        // 处理修改密码功能
+        // 澶勭悊淇敼瀵嗙爜鍔熻兘
         Response.Redirect("~/changepwd_page/change_password.aspx");
     }
 
     protected void lnkLogout_Click(object sender, EventArgs e)
     {
-        // 处理退出登录功能
-        // 清除会话
+        // 澶勭悊閫€鍑虹櫥褰曞姛鑳?
+        // 娓呴櫎浼氳瘽
         Session.Clear();
         Session.Abandon();
         
-        // 重定向到登录页面
+        // 閲嶅畾鍚戝埌鐧诲綍椤甸潰
         Response.Redirect("~/start_page/login.html");
     }
+}
 }
