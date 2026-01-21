@@ -105,6 +105,8 @@
             <div class="search-container">
                 <asp:TextBox ID="txtSearch" runat="server"></asp:TextBox>
                 <asp:Button ID="btnSearch" runat="server" Text="搜索" OnClick="btnSearch_Click" />
+                <asp:Button ID="btnRateMovie" runat="server" Text="评价所选电影" OnClick="btnRateMovie_Click" 
+                    Style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;" />
             </div>
             
             <div class="grid-container">
@@ -113,16 +115,22 @@
                     CssClass="grid-view"
                     AllowPaging="True" 
                     PageSize="10"
-                    OnPageIndexChanging="gvMovies_PageIndexChanging">
+                    OnPageIndexChanging="gvMovies_PageIndexChanging"
+                    DataKeyNames="MovieID">
                     
                     <Columns>
+                        <asp:TemplateField HeaderText="选择">
+                            <ItemTemplate>
+                                <asp:RadioButton ID="rbSelectMovie" runat="server" GroupName="SelectMovie" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:BoundField DataField="MovieID" HeaderText="ID" />
                         <asp:BoundField DataField="Title" HeaderText="电影名称" />
                         <asp:BoundField DataField="Genre" HeaderText="类型" />
                         <asp:BoundField DataField="ReleaseYear" HeaderText="上映年份" />
                         <asp:BoundField DataField="LastingTime" HeaderText="时长" />
                         <asp:BoundField DataField="Distributor" HeaderText="发行商" />
-                        <asp:BoundField DataField="Rating" HeaderText="评分" />
+                        <asp:BoundField DataField="Rating" HeaderText="评分" DataFormatString="{0:N1}" />
                     </Columns>
 
                     <PagerStyle Visible="false" />
