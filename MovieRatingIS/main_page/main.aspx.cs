@@ -125,6 +125,85 @@ public partial class main : System.Web.UI.Page
         Response.Write("<script>alert('请先选择一部电影！');</script>");
     }
 
+    protected void btnFavorite_Click(object sender, EventArgs e)
+    {
+        // 遍历GridView，找到被选中的电影
+        foreach (GridViewRow row in gvMovies.Rows)
+        {
+            RadioButton rb = (RadioButton)row.FindControl("rbSelectMovie");
+            if (rb != null && rb.Checked)
+            {
+                // 获取选中的电影ID
+                int movieId = Convert.ToInt32(gvMovies.DataKeys[row.RowIndex].Value);
+                string movieTitle = row.Cells[2].Text;
+
+                // 获取用户ID
+                if (Session["UserID"] == null)
+                {
+                    Response.Write("<script>alert('请先登录！');window.location.href='../start_page/login.html';</script>");
+                    return;
+                }
+                int userId = Convert.ToInt32(Session["UserID"]);
+
+                // 收藏电影
+                bool success = AddFavorite(userId, movieId);
+                if (success)
+                {
+                    Response.Write($"<script>alert('电影\"{movieTitle}\"已成功收藏！');</script>");
+                }
+                else
+                {
+                    Response.Write("<script>alert('收藏失败，该电影可能已被收藏！');</script>");
+                }
+                return;
+            }
+        }
+
+        // 如果没有选中电影，提示用户
+        Response.Write("<script>alert('请先选择一部电影！');</script>");
+    }
+
+    private bool AddFavorite(int userId, int movieId)
+    {
+        string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
+
+        using (SqlConnection connection = new SqlConnection(connectionString))
+        {
+            connection.Open();
+
+            // 检查是否已经收藏
+            string checkQuery = "SELECT COUNT(*) FROM Favorite WHERE Uno = @Uno AND Mno = @Mno";
+            using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+            {
+                checkCommand.Parameters.AddWithValue("@Uno", userId);
+                checkCommand.Parameters.AddWithValue("@Mno", movieId);
+                int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+                if (count > 0)
+                {
+                    return false; // 已收藏
+                }
+            }
+
+            // 添加收藏
+            string insertQuery = "INSERT INTO Favorite (Uno, Mno, FavoriteTime) VALUES (@Uno, @Mno, @FavoriteTime)";
+            using (SqlCommand insertCommand = new SqlCommand(insertQuery, connection))
+            {
+                insertCommand.Parameters.AddWithValue("@Uno", userId);
+                insertCommand.Parameters.AddWithValue("@Mno", movieId);
+                insertCommand.Parameters.AddWithValue("@FavoriteTime", DateTime.Now);
+
+                int rowsAffected = insertCommand.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+        }
+    }
+
+    protected void btnViewFavorites_Click(object sender, EventArgs e)
+    {
+        // 跳转到收藏页面
+        Response.Redirect("../favorite_page/favorite.aspx");
+    }
+
     protected void lnkNext_Click(object sender, EventArgs e)
     {
         // 跳转到下一页

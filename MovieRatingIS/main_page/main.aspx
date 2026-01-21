@@ -107,6 +107,10 @@
                 <asp:Button ID="btnSearch" runat="server" Text="搜索" OnClick="btnSearch_Click" />
                 <asp:Button ID="btnRateMovie" runat="server" Text="评价所选电影" OnClick="btnRateMovie_Click" 
                     Style="margin-left: 10px; background-color: #4CAF50; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;" />
+                <asp:Button ID="btnFavorite" runat="server" Text="收藏所选电影" OnClick="btnFavorite_Click" 
+                    Style="margin-left: 10px; background-color: #2196F3; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;" />
+                <asp:Button ID="btnViewFavorites" runat="server" Text="我的收藏" OnClick="btnViewFavorites_Click" 
+                    Style="margin-left: 10px; background-color: #FF9800; color: white; border: none; padding: 5px 15px; border-radius: 3px; cursor: pointer;" />
             </div>
             
             <div class="grid-container">
