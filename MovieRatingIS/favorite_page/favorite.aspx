@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>我的收藏 - 电影评分系统</title>
+    <title>My Favorites - Movie Rating System</title>
     <style type="text/css">
         .container {
             width: 80%;
@@ -96,13 +96,13 @@
     <form id="form1" runat="server">
         <div class="container">
             <div class="header-container">
-                <h1>我的收藏</h1>
+                <h1>My Favorites</h1>
                 <div class="user-info">
-                    欢迎，<asp:Label ID="lblUsername" runat="server"></asp:Label>
+                    Welcome, <asp:Label ID="lblUsername" runat="server"></asp:Label>
                 </div>
                 <div class="user-menu">
-                    <asp:Button ID="btnBack" runat="server" Text="返回电影列表" OnClick="btnBack_Click" CssClass="btn-back" />
-                    <asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click">退出登录</asp:LinkButton>
+                    <asp:Button ID="btnBack" runat="server" Text="Back to Movie List" OnClick="btnBack_Click" CssClass="btn-back" />
+                    <asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click">Logout</asp:LinkButton>
                 </div>
             </div>
 
@@ -115,25 +115,25 @@
                     
                     <Columns>
                         <asp:BoundField DataField="MovieID" HeaderText="ID" />
-                        <asp:BoundField DataField="Title" HeaderText="电影名称" />
-                        <asp:BoundField DataField="Genre" HeaderText="类型" />
-                        <asp:BoundField DataField="ReleaseYear" HeaderText="上映年份" />
-                        <asp:BoundField DataField="LastingTime" HeaderText="时长" />
-                        <asp:BoundField DataField="Distributor" HeaderText="发行商" />
-                        <asp:BoundField DataField="Rating" HeaderText="评分" DataFormatString="{0:N1}" />
-                        <asp:BoundField DataField="FavoriteTime" HeaderText="收藏时间" DataFormatString="{0:yyyy-MM-dd HH:mm}" />
-                        <asp:TemplateField HeaderText="操作">
+                        <asp:BoundField DataField="Title" HeaderText="Title" /> 
+                        <asp:BoundField DataField="Genre" HeaderText="Genre" /> 
+                        <asp:BoundField DataField="ReleaseYear" HeaderText="Release Year" /> 
+                        <asp:BoundField DataField="LastingTime" HeaderText="Duration" /> 
+                        <asp:BoundField DataField="Distributor" HeaderText="Distributor" /> 
+                        <asp:BoundField DataField="AvgRating" HeaderText="Rating" DataFormatString="{0:F1}" NullDisplayText="暂无评分" />
+                        <asp:TemplateField HeaderText="Action">
                             <ItemTemplate>
-                                <asp:Button ID="btnRemove" runat="server" Text="取消收藏" 
+                                <asp:Button ID="btnRemove" runat="server" 
+                                    Text="Remove from Favorites" 
                                     CommandName="RemoveFavorite" 
-                                    CommandArgument='<%# Eval("MovieID") %>'
+                                    CommandArgument='<%# Eval("MovieID") %>' 
                                     CssClass="btn-remove" />
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
 
-                <asp:Label ID="lblEmptyMessage" runat="server" Text="暂无收藏的电影" CssClass="empty-message" Visible="False"></asp:Label>
+                <asp:Label ID="lblEmptyMessage" runat="server" Text="No favorite movies yet" CssClass="empty-message" Visible="False"></asp:Label>
             </div>
         </div>
     </form>

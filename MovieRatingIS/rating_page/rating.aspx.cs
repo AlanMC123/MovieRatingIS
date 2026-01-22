@@ -13,39 +13,71 @@ public partial class rating_page_rating : System.Web.UI.Page
         }
     }
 
+    // 
+// [rating.aspx.cs]
+
+// [rating.aspx.cs]
+// [rating.aspx.cs]
     private void ProcessRating()
     {
         try
         {
-            // 获取表单数据
-            string movieId = Request.Form["movieId"];
-            string userId = Request.Form["userId"];
-            string ratingValue = Request.Form["rating"];
+            // 1. 获取原始字符串数据
+            string movieIdStr = Request.Form["movieId"];
+            string userIdStr = Request.Form["userId"];
+            string ratingValueStr = Request.Form["rating"];
             string comment = Request.Form["comment"];
 
-            // 验证必填字段
-            if (string.IsNullOrEmpty(movieId) || string.IsNullOrEmpty(ratingValue))
+            // 2. 数据清洗：去除可能的空格 (针对 'm001 ' 这种情况)
+            string movieId = string.IsNullOrEmpty(movieIdStr) ? "" : movieIdStr.Trim();
+            string userId = string.IsNullOrEmpty(userIdStr) ? "" : userIdStr.Trim();
+
+            // 3. 验证评分 (评分仍然必须是数字)
+            decimal ratingValue;
+            bool isRatingValid = decimal.TryParse(ratingValueStr, out ratingValue);
+
+            // 4. 验证必填项 (ID不再验证是否为数字，只验证是否有值)
+            if (string.IsNullOrEmpty(movieId) || !isRatingValid)
             {
-                lblMessage.Text = "缺少必要的评分信息";
+                string errorDetails = "";
+                if (string.IsNullOrEmpty(movieId)) 
+                {
+                    errorDetails += "MovieID is empty ";
+                }
+                if (!isRatingValid) 
+                {
+                    errorDetails += "Invalid rating (received value: '" + ratingValueStr + "')";
+                }
+
+                lblMessage.Text = "Submission failed details: " + errorDetails;
                 return;
             }
 
-            // 获取数据库连接字符串
             string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
 
-                // 写入评分数据到Rate表
                 string insertRatingQuery = "INSERT INTO Rate (Mno, Uno, Rating, Comment, Time) " +
                                           "VALUES (@Mno, @Uno, @Rating, @Comment, @Time)";
 
                 using (SqlCommand command = new SqlCommand(insertRatingQuery, connection))
                 {
-                    command.Parameters.AddWithValue("@Mno", Convert.ToInt32(movieId));
-                    command.Parameters.AddWithValue("@Uno", !string.IsNullOrEmpty(userId) ? Convert.ToInt32(userId) : DBNull.Value);
-                    command.Parameters.AddWithValue("@Rating", Convert.ToDecimal(ratingValue));
+                    // 【修正】直接传入字符串类型的 ID
+                    command.Parameters.AddWithValue("@Mno", movieId);
+
+                    // 处理 UserID (也作为字符串处理，兼容 '00001' 这种格式)
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        command.Parameters.AddWithValue("@Uno", userId);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@Uno", DBNull.Value);
+                    }
+
+                    command.Parameters.AddWithValue("@Rating", ratingValue);
                     command.Parameters.AddWithValue("@Comment", string.IsNullOrEmpty(comment) ? DBNull.Value : (object)comment);
                     command.Parameters.AddWithValue("@Time", DateTime.Now);
 
@@ -53,51 +85,51 @@ public partial class rating_page_rating : System.Web.UI.Page
 
                     if (rowsAffected > 0)
                     {
-                        // 更新Movie表中的平均评分
-                        UpdateMovieAverageRating(connection, Convert.ToInt32(movieId));
+                        // 注意：UpdateMovieAverageRating 内部可能也需要修改为接收 string
+                        UpdateMovieAverageRating(connection, movieId); 
 
-                        // 评分成功，跳回电影列表
-                        Response.Write("<script>alert('评分成功！');window.location.href='../main_page/main.aspx';</script>");
+                        Response.Write("<script>alert('Rating submitted successfully!');window.location.href='../main_page/main.aspx';</script>");
                     }
                     else
                     {
-                        lblMessage.Text = "评分提交失败，请重试";
+                        lblMessage.Text = "Fail to submit. Check your input data and try again.";
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            lblMessage.Text = "处理评分时发生错误：" + ex.Message;
+            lblMessage.Text = "Error: " + ex.Message;
         }
     }
 
-    private void UpdateMovieAverageRating(SqlConnection connection, int movieId)
+    // 【额外修正】你需要同时修改下面这个辅助方法的签名，把 int movieId 改成 string movieId
+    private void UpdateMovieAverageRating(SqlConnection connection, string movieId)
     {
-        // 计算平均评分
         string calculateAverageQuery = "SELECT AVG(Rating) FROM Rate WHERE Mno = @Mno";
-        decimal averageRating = 0;
-
+        // ... (内部代码不用变，Command 会自动处理 string 参数)
         using (SqlCommand command = new SqlCommand(calculateAverageQuery, connection))
         {
             command.Parameters.AddWithValue("@Mno", movieId);
             object result = command.ExecuteScalar();
-            if (result != DBNull.Value)
+            // ... (后续逻辑保持不变)
+        }
+    }
+    
+        private void UpdateMovieAverageRating(SqlConnection connection, int movieId)
+        {
+            // Calculate average rating
+            string calculateAverageQuery = "SELECT AVG(Rating) FROM Rate WHERE Mno = @Mno";
+            decimal averageRating = 0;
+    
+            using (SqlCommand command = new SqlCommand(calculateAverageQuery, connection))
             {
-                averageRating = Convert.ToDecimal(result);
+                command.Parameters.AddWithValue("@Mno", movieId);
+                object result = command.ExecuteScalar();
+                if (result != DBNull.Value)
+                {
+                    averageRating = Convert.ToDecimal(result);
+                }
             }
         }
-
-        // 注意：Movie表中没有Rating列，暂时注释掉更新操作
-        // 如需实现此功能，请先在Movie表中添加Rating列
-        /*
-        string updateMovieQuery = "UPDATE Movie SET Rating = @AverageRating WHERE Mno = @Mno";
-        using (SqlCommand command = new SqlCommand(updateMovieQuery, connection))
-        {
-            command.Parameters.AddWithValue("@AverageRating", averageRating);
-            command.Parameters.AddWithValue("@Mno", movieId);
-            command.ExecuteNonQuery();
-        }
-        */
     }
-}

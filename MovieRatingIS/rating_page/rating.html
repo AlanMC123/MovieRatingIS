@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电影评分</title>
+    <title>Movie Rating</title>
     <style>
         /* 全局样式重置 */
         * {
@@ -257,12 +257,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>电影评分</h1>
+            <h1>Movie Rating</h1>
         </div>
         <div class="content">
             <div class="movie-info">
-                <h2 id="movieTitle">电影名称</h2>
-                <p id="movieDetails">电影详情</p>
+                <h2 id="movieTitle">Movie Title</h2>
+                <p id="movieDetails">Movie Details</p>
             </div>
             
             <form id="ratingForm" method="post" action="rating.aspx">
@@ -270,7 +270,7 @@
                 <input type="hidden" id="userId" name="userId" value="">
                 
                 <div class="rating-section">
-                    <h3>评分</h3>
+                    <h3>Rating</h3>
                     <div class="star-rating">
                         <span class="star" data-rating="1">★</span>
                         <span class="star" data-rating="2">★</span>
@@ -282,13 +282,13 @@
                 </div>
                 
                 <div class="comment-section">
-                    <h3>评价</h3>
-                    <textarea id="comment" name="comment" placeholder="请输入您的评价（可选）"></textarea>
+                    <h3>Comment</h3>
+                    <textarea id="comment" name="comment" placeholder="Please enter your comment (optional)"></textarea>
                 </div>
                 
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary">提交评分</button>
-                    <button type="button" class="btn btn-secondary" onclick="goBack()">返回电影列表</button>
+                    <button type="submit" class="btn btn-primary">Submit Rating</button>
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Back to Movie List</button>
                 </div>
             </form>
         </div>
@@ -303,15 +303,30 @@
         
         // 初始化页面
         function init() {
+            // 获取 URL 参数
             const movieId = getQueryParam('movieId');
-            const movieTitle = getQueryParam('movieTitle');
+            // 解码标题，防止乱码导致获取失败
+            const movieTitleParam = getQueryParam('movieTitle');
+            const movieTitle = movieTitleParam ? decodeURIComponent(movieTitleParam) : '未知电影';
             const userId = getQueryParam('userId') || '';
             
-            if (movieId && movieTitle) {
+            // 调试日志 (按F12可以在控制台看到)
+            console.log("初始化参数:", { movieId, movieTitle, userId });
+        
+            // 【关键修复】独立设置每个字段，不再依赖 movieTitle 是否存在
+            if (movieId) {
                 document.getElementById('movieId').value = movieId;
-                document.getElementById('userId').value = userId;
-                document.getElementById('movieTitle').textContent = movieTitle;
                 document.getElementById('movieDetails').textContent = `电影ID: ${movieId}`;
+            } else {
+                alert("警告：未检测到电影ID，请从主页重新进入！");
+            }
+        
+            if (userId) {
+                document.getElementById('userId').value = userId;
+            }
+        
+            if (movieTitle) {
+                document.getElementById('movieTitle').textContent = movieTitle;
             }
         }
         
@@ -364,9 +379,16 @@
         // 表单提交验证
         document.getElementById('ratingForm').addEventListener('submit', function(e) {
             const rating = document.getElementById('rating').value;
+            const movieId = document.getElementById('movieId').value;
+            
             if (!rating) {
                 e.preventDefault();
-                alert('请选择评分');
+                alert('请点击星星选择评分！');
+                return;
+            }
+            if (!movieId) {
+                e.preventDefault();
+                alert('错误：电影ID丢失，请返回列表重试。');
             }
         });
     </script>

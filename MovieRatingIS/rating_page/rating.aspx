@@ -6,7 +6,7 @@
 <head runat="server">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>评分处理</title>
+    <title>Rating Processing</title>
     <style>
         /* 全局样式重置 */
         * {
@@ -112,11 +112,11 @@
 <body>
     <form id="form1" runat="server">
         <div class="container">
-            <h1>评分结果</h1>
+            <h1>Rating Result</h1>
             <div class="message" id="messageContainer">
                 <asp:Label ID="lblMessage" runat="server" Text="" CssClass="message"></asp:Label>
             </div>
-            <a href="../main_page/main.aspx" class="btn btn-primary">返回电影列表</a>
+            <a href="../main_page/main.aspx" class="btn btn-primary">Back to Movie List</a>
         </div>
     </form>
 </body>

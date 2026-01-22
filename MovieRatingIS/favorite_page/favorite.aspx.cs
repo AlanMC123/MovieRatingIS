@@ -8,14 +8,14 @@ public partial class favorite_page_favorite : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-        // 检查用户是否登录
+        // 1. 核心修复：Session 取值需与登录时存入的 Key 完全一致
+        // 且由于 ID 是 '00001' 格式，必须检查 ToString() 是否为空
         if (Session["UserID"] == null || Session["Username"] == null)
         {
             Response.Redirect("~/start_page/login.html");
             return;
         }
 
-        // 显示当前用户名
         lblUsername.Text = Session["Username"].ToString();
 
         if (!IsPostBack)
@@ -27,17 +27,22 @@ public partial class favorite_page_favorite : System.Web.UI.Page
     private void BindFavoritesGridView()
     {
         string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
-        int userId = Convert.ToInt32(Session["UserID"]);
+        
+        string userId = Session["UserID"].ToString();
 
-        // 查询用户收藏的电影
-        string query = "SELECT m.Mno as MovieID, m.Mname as Title, m.Mtype as Genre, m.Myear as ReleaseYear, " +
-                       "m.Mtime as LastingTime, m.Distributer as Distributor, m.Rating as Rating, " +
-                       "f.FavoriteTime as FavoriteTime " +
-                       "FROM Favorite f " +
-                       "INNER JOIN Movie m ON f.Mno = m.Mno " +
-                       "WHERE f.Uno = @Uno " +
-                       "ORDER BY f.FavoriteTime DESC";
-
+        string query = @"
+            SELECT 
+                m.Mno as MovieID, 
+                m.Mname as Title, 
+                m.Mtype as Genre, 
+                m.Myear as ReleaseYear, 
+                m.Mtime as LastingTime, 
+                m.Distributer as Distributor,
+                (SELECT AVG(CAST(Rating AS FLOAT)) FROM Rate WHERE Mno = m.Mno) as AvgRating
+            FROM Favorite f
+            INNER JOIN Movie m ON f.Mno = m.Mno
+            WHERE f.Uno = @Uno
+            ORDER BY m.Mno ASC";
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -68,38 +73,32 @@ public partial class favorite_page_favorite : System.Web.UI.Page
     {
         if (e.CommandName == "RemoveFavorite")
         {
-            int movieId = Convert.ToInt32(e.CommandArgument);
-            int userId = Convert.ToInt32(Session["UserID"]);
+            // 5. 修复：ID 为 m001 格式，应作为 string 处理
+            string movieId = e.CommandArgument.ToString();
+            string userId = Session["UserID"].ToString();
 
             bool success = RemoveFavorite(userId, movieId);
             if (success)
             {
-                Response.Write("<script>alert('已取消收藏！');</script>");
+                // 使用客户端脚本弹出提示，避免页面刷新中断
+                Page.ClientScript.RegisterStartupScript(this.GetType(), "alert", "alert('Removed from favorites!');", true);
                 BindFavoritesGridView();
-            }
-            else
-            {
-                Response.Write("<script>alert('取消收藏失败！');</script>");
             }
         }
     }
 
-    private bool RemoveFavorite(int userId, int movieId)
+    private bool RemoveFavorite(string userId, string movieId)
     {
         string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
-
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
             connection.Open();
-
             string deleteQuery = "DELETE FROM Favorite WHERE Uno = @Uno AND Mno = @Mno";
             using (SqlCommand command = new SqlCommand(deleteQuery, connection))
             {
                 command.Parameters.AddWithValue("@Uno", userId);
                 command.Parameters.AddWithValue("@Mno", movieId);
-
-                int rowsAffected = command.ExecuteNonQuery();
-                return rowsAffected > 0;
+                return command.ExecuteNonQuery() > 0;
             }
         }
     }
@@ -111,11 +110,8 @@ public partial class favorite_page_favorite : System.Web.UI.Page
 
     protected void lnkLogout_Click(object sender, EventArgs e)
     {
-        // 清除会话
         Session.Clear();
         Session.Abandon();
-
-        // 重定向到登录页面
         Response.Redirect("~/start_page/login.html");
     }
 }
