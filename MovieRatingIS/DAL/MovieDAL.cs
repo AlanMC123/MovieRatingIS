@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -14,7 +14,7 @@ namespace MovieRatingIS.DAL
         public DataTable GetMovies(string searchTerm)
         {
             string connStr = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
-            string query = "SELECT Mno as MovieID, Mname as Title, Mtype as Genre, Myear as ReleaseYear, Distributer as Director FROM Movie";
+            string query = "SELECT Mno as MovieID, Mname as Title, Mtype as Genre, Myear as ReleaseYear FROM Movie";
             DataTable movieTable = new DataTable();
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -26,7 +26,7 @@ namespace MovieRatingIS.DAL
                         // 有搜索关键词时，添加模糊查询条件
                         if (!string.IsNullOrEmpty(searchTerm))
                         {
-                            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm OR Distributer LIKE @SearchTerm";
+                            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm";
                             cmd.CommandText = query;
                             cmd.Parameters.AddWithValue("@SearchTerm", "%" + searchTerm + "%");
                         }
@@ -59,7 +59,7 @@ namespace MovieRatingIS.DAL
                     {
                         if (!string.IsNullOrEmpty(searchTerm))
                         {
-                            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm OR Distributer LIKE @SearchTerm";
+                            query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm";
                             cmd.CommandText = query;
                             cmd.Parameters.AddWithValue("@SearchTerm", "%" + searchTerm + "%");
                         }

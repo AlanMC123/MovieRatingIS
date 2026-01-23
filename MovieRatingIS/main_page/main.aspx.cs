@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -36,7 +36,6 @@ namespace MovieRatingIS
                     m.Mtype as Genre, 
                     m.Myear as ReleaseYear, 
                     m.Mtime as Duration, 
-                    m.Distributer,
                     AVG(CAST(r.Rating AS FLOAT)) as AvgRating 
                 FROM Movie m
                 LEFT JOIN (
@@ -51,7 +50,7 @@ namespace MovieRatingIS
             }
 
             // 分组以计算平均值
-            string groupBy = " GROUP BY m.Mno, m.Mname, m.Mtype, m.Myear, m.Mtime, m.Distributer";
+            string groupBy = " GROUP BY m.Mno, m.Mname, m.Mtype, m.Myear, m.Mtime";
 
             query += whereClause + groupBy;
 

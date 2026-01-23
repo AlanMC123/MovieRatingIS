@@ -27,33 +27,33 @@ public partial class change_password : System.Web.UI.Page
         string newPassword = txtNewPassword.Text.Trim();
         string confirmPassword = txtConfirmPassword.Text.Trim();
 
-        // 验证输入
+        // Validate input
         if (string.IsNullOrEmpty(oldPassword))
         {
-            lblMessage.Text = "请输入原密码";
+            lblMessage.Text = "Please enter your old password";
             return;
         }
 
         if (string.IsNullOrEmpty(newPassword))
         {
-            lblMessage.Text = "请输入新密码";
+            lblMessage.Text = "Please enter your new password";
             return;
         }
 
         if (string.IsNullOrEmpty(confirmPassword))
         {
-            lblMessage.Text = "请确认新密码";
+            lblMessage.Text = "Please confirm your new password";
             return;
         }
 
         if (newPassword != confirmPassword)
         {
-            lblMessage.Text = "新密码和确认密码不匹配";
+            lblMessage.Text = "New password and confirmation password do not match";
             return;
         }
 
-        // 获取用户ID（假设已存储在Session中）
-        int userId = Convert.ToInt32(Session["UserID"]);
+        // Get user ID (assuming it's stored in Session)
+        string userId = Session["UserID"].ToString();
         string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
 
         try
@@ -62,7 +62,7 @@ public partial class change_password : System.Web.UI.Page
             {
                 connection.Open();
 
-                // 检查原密码是否正确
+                // Check if old password is correct
                 string checkPasswordQuery = "SELECT Uno FROM Users WHERE Uno = @UserID AND Upassword = @OldPassword";
                 using (SqlCommand checkCommand = new SqlCommand(checkPasswordQuery, connection))
                 {
@@ -72,12 +72,12 @@ public partial class change_password : System.Web.UI.Page
                     object result = checkCommand.ExecuteScalar();
                     if (result == null)
                     {
-                        lblMessage.Text = "原密码不正确";
+                        lblMessage.Text = "Old password is incorrect";
                         return;
                     }
                 }
 
-                // 更新密码
+                // Update password
                 string updatePasswordQuery = "UPDATE Users SET Upassword = @NewPassword WHERE Uno = @UserID";
                 using (SqlCommand updateCommand = new SqlCommand(updatePasswordQuery, connection))
                 {
@@ -87,28 +87,28 @@ public partial class change_password : System.Web.UI.Page
                     int rowsAffected = updateCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        lblMessage.Text = "密码修改成功";
-                        // 清空输入框
+                        lblMessage.Text = "Password changed successfully";
+                        // Clear input fields
                         txtOldPassword.Text = "";
                         txtNewPassword.Text = "";
                         txtConfirmPassword.Text = "";
                     }
                     else
                     {
-                        lblMessage.Text = "密码修改失败";
+                        lblMessage.Text = "Failed to change password";
                     }
                 }
             }
         }
         catch (Exception ex)
         {
-            lblMessage.Text = "发生错误：" + ex.Message;
+            lblMessage.Text = "Error: " + ex.Message;
         }
     }
 
     protected void lnkBack_Click(object sender, EventArgs e)
     {
-        // 返回主页面
+        // Return to main page
         Response.Redirect("~/main_page/main.aspx");
     }
 }

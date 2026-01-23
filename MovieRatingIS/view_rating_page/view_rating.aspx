@@ -6,25 +6,105 @@
 <head runat="server">
     <title>Movie Ratings - Movie Rating System</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
-        .header { 
-            background-color: #333; 
-            color: white;
-            padding: 10px 0; 
-            text-align: center; 
-            position: relative;
+        * {
+            box-sizing: border-box;
         }
-        .container { width: 80%; margin: 0 auto; padding: 20px; }
-        .grid-view { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .grid-view th, .grid-view td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        .grid-view th { background-color: #333; color: white; }
-        .grid-view tr:nth-child(even) { background-color: #f2f2f2; }
-        .grid-view tr:hover { background-color: #ddd; }
-        .btn-back { background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 3px; cursor: pointer; margin-bottom: 20px; text-decoration: none; display: inline-block; }
-        .btn-back:hover { background-color: #45a049; }
-        .movie-info { background-color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .movie-title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-        .movie-details { font-size: 16px; color: #666; }
+        
+        body {
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: white;
+            color: #333;
+            padding: 15px 0;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .grid-view {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .grid-view th, .grid-view td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .grid-view th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .grid-view tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .grid-view tr:hover {
+            background-color: #e9ecfd;
+        }
+        
+        .btn-back {
+            background-color: #4f66ca;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .btn-back:hover {
+            background-color: #4447a2;
+            transform: translateY(-2px);
+        }
+        
+        .movie-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .movie-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .movie-details {
+            font-size: 16px;
+            color: #666;
+        }
     </style>
 </head>
 <body>

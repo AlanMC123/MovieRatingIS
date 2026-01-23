@@ -37,7 +37,6 @@ public partial class favorite_page_favorite : System.Web.UI.Page
                 m.Mtype as Genre, 
                 m.Myear as ReleaseYear, 
                 m.Mtime as LastingTime, 
-                m.Distributer as Distributor,
                 (SELECT AVG(CAST(Rating AS FLOAT)) FROM Rate WHERE Mno = m.Mno) as AvgRating
             FROM Favorite f
             INNER JOIN Movie m ON f.Mno = m.Mno
