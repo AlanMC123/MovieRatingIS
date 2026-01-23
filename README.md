@@ -96,17 +96,17 @@
 | Uno |  | 用户ID | char | 10 | | | 外键，与Mno组成主键 |
 | Mno | | 电影ID | char | 10 | | | 外键，与Uno组成主键 |
 | Type | 用户为收藏的电影自定义的分类 | 收藏分类 |  varchar | 100 | not null | | |
+
 ## 四、逻辑层设计
 ### 4.1 数据库连接
-`Web.config`中设置连接字符串：
-
+在数据库连接中，项目采用ADO.NET机制，并设置了相应的web.config配置文件。Web.config中设置连接字符串如下：
 ```xml
 <add name="MovieRatingConnection" 
-  connectionString="Data Source=KANCHOTX5PRO\ALANMC123; Initial Catalog=MovieRating; User ID=Kancho;Password=190826;Integrated Security=False;MultipleActiveResultSets=True;" 
+  connectionString="Data Source=(local); Initial Catalog=MovieRating; User ID=xxx;Password=xxx;Integrated Security=False;MultipleActiveResultSets=True;" 
   providerName="System.Data.SqlClient" />
 ```
 
-`Main.aspx.cs`中连接并调用：
+Main.aspx.cs中连接并调用：
 
 ```csharp
 string connectionString = ConfigurationManager.ConnectionStrings["MovieRatingConnection"].ConnectionString;
@@ -133,10 +133,258 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 ```
 
 ### 4.2 事件响应
-#### 4.2.1 数据库查询
+#### 4.2.1 用户认证事件
+- **登录事件**：connection.aspx.cs中处理用户登录，验证用户名密码，成功后存储用户信息到Session，并跳转至主页。
+```csharp
+// connection.aspx.cs - 登录验证
+DataTable userTable = userDal.GetUserByUsername(username);
+if (userTable.Rows.Count > 0) 
+{
+    string dbPwd = userTable.Rows[0]["Upassword"].ToString().Trim();
+    if (dbPwd == password) 
+    {
+        Session["Username"] = username;
+        Session["UserID"] = userTable.Rows[0]["Uno"].ToString();
+        Response.Redirect("~/main_page/main.aspx");
+    }
+}
+```
 
+- **注册事件**：register.aspx.cs中处理用户注册，插入新用户记录到Users表，并检查用户名是否已存在。
+```csharp
+// register.aspx.cs - 用户注册
+DataTable checkUser = userDal.GetUserByUsername(username);
+if (checkUser.Rows.Count > 0)
+{
+    Response.Write("<script>alert('用户名已被注册！');</script>");
+    return;
+}
+
+bool isSuccess = userDal.AddUser(user);
+if (isSuccess)
+{
+    Response.Write("<script>alert('注册成功！请登录');</script>");
+}
+```
+
+#### 4.2.2 主页事件
+- **搜索电影**：main.aspx.cs中的btnSearch_Click事件根据输入的关键词查询电影列表。
+```csharp
+// main.aspx.cs - 搜索电影
+protected void btnSearch_Click(object sender, EventArgs e)
+{
+    gvMovies.PageIndex = 0;
+    BindGridView();
+}
+```
+
+- **分页事件**：gvMovies_PageIndexChanging及分页按钮事件（首页、上页、下页、末页）实现电影列表分页浏览。
+```csharp
+// main.aspx.cs - GridView分页
+protected void gvMovies_PageIndexChanging(object sender, GridViewPageEventArgs e)
+{
+    gvMovies.PageIndex = e.NewPageIndex;
+    BindGridView();
+}
+
+protected void lnkFirst_Click(object sender, EventArgs e)
+{
+    gvMovies.PageIndex = 0;
+    BindGridView();
+}
+```
+
+- **评分电影**：btnRateMovie_Click事件获取选中的电影并跳转至评分页面。
+```csharp
+// main.aspx.cs - 跳转到评分页面
+foreach (GridViewRow row in gvMovies.Rows)
+{
+    RadioButton rb = (RadioButton)row.FindControl("rbSelectMovie");
+    if (rb != null && rb.Checked)
+    {
+        string movieIdStr = gvMovies.DataKeys[row.RowIndex].Value.ToString();
+        string userId = Session["UserID"] != null ? Session["UserID"].ToString() : "";
+        string movieTitle = row.Cells[2].Text;
+        
+        Response.Redirect("../rating_page/rating.html?movieId=" + movieIdStr + 
+                         "&movieTitle=" + Server.UrlEncode(movieTitle) + 
+                         "&userId=" + userId);
+        return;
+    }
+}
+```
+
+- **收藏电影**：btnFavorite_Click事件将选中的电影添加到当前用户的收藏中。
+```csharp
+// main.aspx.cs - 添加收藏
+private bool AddFavorite(string userId, string movieId)
+{
+    string checkQuery = "SELECT COUNT(*) FROM Favorite WHERE Uno = @Uno AND Mno = @Mno";
+    using (SqlCommand checkCommand = new SqlCommand(checkQuery, connection))
+    {
+        checkCommand.Parameters.AddWithValue("@Uno", userId);
+        checkCommand.Parameters.AddWithValue("@Mno", movieId);
+        int count = Convert.ToInt32(checkCommand.ExecuteScalar());
+        if (count > 0)
+        {
+            return false; 
+        }
+    }
+    
+    string insertQuery = "INSERT INTO Favorite (Uno, Mno, Type) VALUES (@Uno, @Mno, @Type)";
+    // 执行插入操作
+}
+```
+
+- **查看收藏**：btnViewFavorites_Click跳转至收藏列表页面。
+```csharp
+// main.aspx.cs - 查看收藏列表
+protected void btnViewFavorites_Click(object sender, EventArgs e)
+{
+    Response.Redirect("/favorite_page/favorite.aspx");
+}
+```
+
+- **查看评分**：btnViewRatings_Click跳转至电影评分详情页面。
+```csharp
+// main.aspx.cs - 查看电影评分
+foreach (GridViewRow row in gvMovies.Rows)
+{
+    RadioButton rb = (RadioButton)row.FindControl("rbSelectMovie");
+    if (rb != null && rb.Checked)
+    {
+        string movieIdStr = gvMovies.DataKeys[row.RowIndex].Value.ToString();
+        string movieTitle = row.Cells[2].Text;
+        
+        Response.Redirect("../view_rating_page/view_rating.aspx?movieId=" + 
+                         movieIdStr + "&movieTitle=" + Server.UrlEncode(movieTitle));
+        return;
+    }
+}
+```
+
+#### 4.2.3 收藏管理事件
+- **移除收藏**：favorite.aspx.cs中的gvFavorites_RowCommand处理移除收藏操作，并更新Favorite表。
+```csharp
+// favorite.aspx.cs - 移除收藏
+protected void gvFavorites_RowCommand(object sender, GridViewCommandEventArgs e)
+{
+    if (e.CommandName == "RemoveFavorite")
+    {
+        string movieId = e.CommandArgument.ToString();
+        string userId = Session["UserID"].ToString();
+        
+        bool success = RemoveFavorite(userId, movieId);
+        if (success)
+        {
+            Page.ClientScript.RegisterStartupScript(this.GetType(), "alert", 
+                "alert('Removed from favorites!');", true);
+            BindFavoritesGridView();
+        }
+    }
+}
+```
+
+- **返回主页**：btnBack_Click返回主页面。
+```csharp
+// favorite.aspx.cs - 返回主页
+protected void btnBack_Click(object sender, EventArgs e)
+{
+    Response.Redirect("~/main_page/main.aspx");
+}
+```
+
+#### 4.2.4 密码修改事件
+- **提交修改**：change_password.aspx.cs中的btnSubmit_Click事件验证旧密码并更新为新密码。
+```csharp
+// change_password.aspx.cs - 修改密码
+string checkPasswordQuery = "SELECT Uno FROM Users WHERE Uno = @UserID AND Upassword = @OldPassword";
+using (SqlCommand checkCommand = new SqlCommand(checkPasswordQuery, connection))
+{
+    checkCommand.Parameters.AddWithValue("@UserID", userId);
+    checkCommand.Parameters.AddWithValue("@OldPassword", oldPassword);
+    
+    object result = checkCommand.ExecuteScalar();
+    if (result == null)
+    {
+        lblMessage.Text = "Old password is incorrect";
+        return;
+    }
+}
+
+string updatePasswordQuery = "UPDATE Users SET Upassword = @NewPassword WHERE Uno = @UserID";
+// 执行更新操作
+```
+
+#### 4.2.5 评分查看事件
+- **分页查看**：view_rating.aspx.cs中的gvRatings_PageIndexChanging实现评分评论列表的分页。
+```csharp
+// view_rating.aspx.cs - 评分列表分页
+protected void gvRatings_PageIndexChanging(object sender, GridViewPageEventArgs e)
+{
+    gvRatings.PageIndex = e.NewPageIndex;
+    string movieId = Request.QueryString["movieId"];
+    BindRatingsGrid(movieId);
+}
+```
 
 ### 4.3 逻辑处理
+#### 4.3.1 用户状态管理
+- 使用Session存储UserID和Username，用于在页面间保持用户登录状态。若用户未登录，则重定向至登录页面。
+```csharp
+// main.aspx.cs - 检查用户登录状态
+if (Session["Username"] != null)
+{
+    lblUsername.Text = Session["Username"].ToString();
+}
+else
+{
+    Response.Redirect("~/start_page/login.html");
+}
+```
+
+#### 4.3.2 数据访问封装
+- 数据访问层（DAL）如MovieDAL.cs和UserDAL.cs封装了常见的数据库操作（查询、插入、更新），供逻辑层调用。通过 DataTable 和 SqlDataAdapter 实现数据绑定与展示。
+```csharp
+// MovieDAL.cs - 查询电影列表
+public DataTable GetMovies(string searchTerm)
+{
+    string query = "SELECT Mno as MovieID, Mname as Title, Mtype as Genre, Myear as ReleaseYear FROM Movie";
+    if (!string.IsNullOrEmpty(searchTerm))
+    {
+        query += " WHERE Mname LIKE @SearchTerm OR Mtype LIKE @SearchTerm";
+        cmd.Parameters.AddWithValue("@SearchTerm", "%" + searchTerm + "%");
+    }
+    // 执行查询并返回DataTable
+}
+```
+
+#### 4.3.3 业务规则校验
+- 注册时检查用户名是否重复
+- 评分和收藏前检查用户是否已登录
+- 收藏时检查是否已收藏过同一电影
+- 修改密码时验证旧密码是否正确
+```csharp
+// main.aspx.cs - 收藏前检查用户登录状态
+if (Session["UserID"] == null)
+{
+    Response.Write("<script>alert('Please login first!');window.location.href='../start_page/login.html';</script>");
+    return;
+}
+```
+
+#### 4.3.4 页面间参数传递
+- 使用QueryString传递参数，如movieId和movieTitle，实现页面间数据共享。使用Server.UrlEncode和Server.UrlDecode处理中文参数。
+```csharp
+// main.aspx.cs - 传递电影参数到评分页面
+Response.Redirect("../rating_page/rating.html?movieId=" + movieIdStr + 
+                 "&movieTitle=" + Server.UrlEncode(movieTitle) + 
+                 "&userId=" + userId);
+
+// view_rating.aspx.cs - 接收电影参数
+string movieId = Request.QueryString["movieId"];
+string movieTitle = Server.UrlDecode(Request.QueryString["movieTitle"]);
+```
 
 ## 五、展示层设计
 
