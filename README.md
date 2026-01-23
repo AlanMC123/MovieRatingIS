@@ -65,6 +65,13 @@
 
 ## 三、数据层设计
 
+### 3.1 Users表
+
+### 3.2 Movie表
+
+### 3.3 Rate表
+
+### 3.4 Favorite表
 
 ## 四、逻辑层设计
 ### 4.1 数据库连接
@@ -103,7 +110,11 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 ```
 
 ### 4.2 事件响应
+#### 4.2.1 数据库查询
+
+
 ### 4.3 逻辑处理
+
 ## 五、展示层设计
 
 
@@ -119,4 +130,54 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 
 
 ### 6.3 测试
+
 ### 6.4 文件结构
+- Web.config
+
+- database
+  - MovieRating.mdf
+  - MovieRating_log.ldf
+- create_rating_table.sql
+  - MovieRatingIS.sln
+
+
+- DAL
+  - MovieDAL.cs
+  - UserDAL.cs
+
+- Model
+  - Movie.cs
+  - User.cs
+
+- codes
+  - connection.aspx
+    - connection.aspx.cs
+    - connection.aspx.designer.cs
+  - register.aspx
+    - register.aspx.cs
+    - register.aspx.designer.cs
+
+- main_page
+  - main.aspx
+    - main.aspx.cs
+      - main.aspx.designer.cs
+- start_page
+  - login.html
+  - register.html
+  - start.html
+  - style.css
+- changepwd_page
+- view_rating_page
+- rating_page
+- favorite_page
+
+- test.aspx
+  - test.aspx.cs
+
+- obj
+- Properties
+- MovieRatingIS.csproj
+- MovieRatingIS.csproj.user
+
+
+
