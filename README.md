@@ -1,4 +1,4 @@
-## 一、系统概述
+# 一、系统概述
 ### 1.1 系统目标与愿景
 开发一个电影评分系统，为用户提供集电影浏览、评价互动与个性化管理于一体的在线服务平台，包括以下功能特性：
 
@@ -66,13 +66,36 @@
 ## 三、数据层设计
 
 ### 3.1 Users表
-
+| 数据项 | 含义 | 别名 | 类型 | 长度 | 取值范围 | 取值含义 | 与其他数据项关系 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Uno | 唯一标识用户 | 用户ID | char | 10 | | | primary key |
+| Uname | | 用户名 | varchar | 30 | not null  | | |
+| Usex | | 用户性别 | char | 2 | {'男', '女'} | | |
+| Utelephone | | 用户电话号码 | varchar | 11 | | | |
+| Upassword |  | 用户密码 | char | 10 | not null | | |
 ### 3.2 Movie表
-
+| 数据项 | 含义 | 别名 | 类型 | 长度 | 取值范围 | 取值含义 | 与其他数据项关系 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Mno | 唯一标识电影 | 电影ID | char | 10 | | | primary key |
+| Mname | | 电影名称 | varchar | 50 | not null | | |
+| Mtype | | 电影类型 | varchar | 10 | | | |
+| Myear | | 上映年份 | int | | >= 1900 | | |
+| Mtime | | 电影时长 | int | |  > 0 | | |
+| Distributer | | 发行商 | varchar | 20 | | | |
 ### 3.3 Rate表
-
+| 数据项 | 含义 | 别名 | 类型 | 长度 | 取值范围 | 取值含义 | 与其他数据项关系 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Uno | 发布评分的用户ID | 用户ID | char | 10 | | | 外键，与Mno组成主键 |
+| Mno | 被评分的电影ID | 电影ID | char | 10 | | | 外键，与Uno组成主键 |
+| Time | | 评分时间 | datetime | | not null  | | |
+| Rating | | 评分 | decimal | | Not null, 0<= Rating <= 10 | | |
+| Comment | | 评论 | varchar | 3000 | | | |
 ### 3.4 Favorite表
-
+| 数据项 | 含义 | 别名 | 类型 | 长度 | 取值范围 | 取值含义 | 与其他数据项关系 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Uno |  | 用户ID | char | 10 | | | 外键，与Mno组成主键 |
+| Mno | | 电影ID | char | 10 | | | 外键，与Uno组成主键 |
+| Type | 用户为收藏的电影自定义的分类 | 收藏分类 |  varchar | 100 | not null | | |
 ## 四、逻辑层设计
 ### 4.1 数据库连接
 `Web.config`中设置连接字符串：
@@ -117,7 +140,22 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 
 ## 五、展示层设计
 
-
+### UI设计
+- 交互反馈：悬停时会触发颜色变化与浮动效果。
+```css
+input:focus {
+    border-color: #9face6;
+    box-shadow: 0 0 8px rgba(159, 172, 230, 0.3); 
+}
+back-btn:hover {
+    background-color: #c4c4c4;
+    transform: translateY(-2px);
+}
+.gender-group label:hover {
+    color: #4f66ca;
+}
+```
+- 动画效果：所有交互都使用`transition`进行过度，页面变化流畅。
 ## 六、操作提示
 ### 6.1 数据库文件挂载
 `\Database`中包含项目运行需要的示例数据库。
@@ -134,6 +172,7 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 ### 6.4 文件结构
 - Web.config
 
+
 - database
   - MovieRating.mdf
   - MovieRating_log.ldf
@@ -145,9 +184,11 @@ using (SqlConnection connection = new SqlConnection(connectionString))
   - MovieDAL.cs
   - UserDAL.cs
 
+
 - Model
   - Movie.cs
   - User.cs
+
 
 - codes
   - connection.aspx
@@ -156,6 +197,7 @@ using (SqlConnection connection = new SqlConnection(connectionString))
   - register.aspx
     - register.aspx.cs
     - register.aspx.designer.cs
+
 
 - main_page
   - main.aspx
@@ -171,8 +213,10 @@ using (SqlConnection connection = new SqlConnection(connectionString))
 - rating_page
 - favorite_page
 
+
 - test.aspx
   - test.aspx.cs
+
 
 - obj
 - Properties
